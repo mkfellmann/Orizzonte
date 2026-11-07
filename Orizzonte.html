@@ -1,0 +1,979 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<title>Orizzonte</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600;700&family=Outfit:wght@600;700;800&display=swap" rel="stylesheet">
+<style>
+/* Layout: pagine morbide e tonde, un solo colore caldo (il sole all'orizzonte) su fondo chiaro. */
+:root{
+  --bg:#F4F7FB; --card:#FFFFFF; --ink:#16213A; --muted:#55627A; --line:#E1E7F0; --soft:#EAF0F8;
+  --sun:#FFC83D; --on-sun:#16213A;
+  --good:#0E7A4D; --good-soft:#DFF4EA; --warn:#9A4F00; --warn-soft:#FFF0D9;
+  --shadow:0 1px 2px rgba(22,33,58,.06),0 12px 32px rgba(22,33,58,.07);
+  --f-display:'Outfit',system-ui,'Helvetica Neue',Arial,sans-serif;
+  --f-body:'Figtree',system-ui,'Helvetica Neue',Arial,sans-serif;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#0B1220; --card:#141D31; --ink:#EEF2FA; --muted:#A5B0C5; --line:#26314A; --soft:#1B2640;
+    --good:#5AD6A0; --good-soft:#12342A; --warn:#F5A83B; --warn-soft:#33250F;
+    --shadow:0 1px 2px rgba(0,0,0,.4);
+    color-scheme:dark;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#0B1220; --card:#141D31; --ink:#EEF2FA; --muted:#A5B0C5; --line:#26314A; --soft:#1B2640;
+  --good:#5AD6A0; --good-soft:#12342A; --warn:#F5A83B; --warn-soft:#33250F;
+  --shadow:0 1px 2px rgba(0,0,0,.4);
+  color-scheme:dark;
+}
+
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--f-body);font-size:16px;line-height:1.55}
+h1,h2,h3,p,ul,dl,dd,fieldset,legend{margin:0;padding:0}
+ul{list-style:none}
+fieldset{border:0;min-width:0}
+a{color:inherit}
+.wrap{max-width:1080px;margin-inline:auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+.small{font-size:.875rem}
+.muted{color:var(--muted)}
+.num{font-variant-numeric:tabular-nums}
+:focus-visible{outline:3px solid var(--ink);outline-offset:2px}
+.h1{font:700 clamp(2rem,5vw,3.1rem)/1.08 var(--f-display);letter-spacing:-.02em;text-wrap:balance}
+.h1s{font:700 clamp(1.7rem,4vw,2.4rem)/1.12 var(--f-display);letter-spacing:-.02em;text-wrap:balance}
+.h2{font:700 clamp(1.35rem,3vw,1.75rem)/1.15 var(--f-display);letter-spacing:-.01em}
+.h3{font:700 1.2rem/1.25 var(--f-display)}
+.lead{font-size:1.1rem;color:var(--muted);max-width:60ch}
+.stack{display:flex;flex-direction:column;gap:20px}
+.stack-s{display:flex;flex-direction:column;gap:10px}
+.page{padding-block:8px 48px}
+.narrow{max-width:640px;margin-inline:auto}
+.grid2{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}
+
+/* Testata */
+.top .wrap{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:12px 20px;padding-block:16px}
+.brand{display:flex;align-items:center;gap:10px;text-decoration:none;font:700 1.5rem/1 var(--f-display);letter-spacing:-.02em}
+.brand svg{width:36px;height:36px;flex:none}
+.sunfill{fill:var(--sun)} .linefill{fill:var(--ink)}
+.proto{font:600 .72rem var(--f-body);background:var(--soft);color:var(--muted);padding:3px 10px;border-radius:999px}
+.nav{display:flex;flex-wrap:wrap;gap:6px}
+.nav a{display:inline-flex;align-items:center;gap:8px;padding:9px 16px;border-radius:999px;text-decoration:none;font-weight:600;color:var(--muted)}
+.nav a:hover{background:var(--soft);color:var(--ink)}
+.nav a[aria-current="page"]{background:var(--sun);color:var(--on-sun)}
+.badge{min-width:20px;height:20px;padding:0 6px;display:inline-grid;place-items:center;border-radius:999px;background:var(--ink);color:var(--bg);font-size:.75rem;font-weight:700}
+
+/* Componenti */
+.card{background:var(--card);border:1px solid var(--line);border-radius:24px;box-shadow:var(--shadow)}
+.pad{padding:24px}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;font:600 1rem var(--f-body);min-height:46px;padding:10px 22px;border-radius:999px;border:0;background:var(--sun);color:var(--on-sun);cursor:pointer;text-decoration:none}
+.btn:hover:not(:disabled){filter:brightness(.95)}
+.btn:disabled{opacity:.45;cursor:not-allowed}
+.btn.ghost{background:var(--soft);color:var(--ink)}
+.btn.ghost:hover:not(:disabled){filter:brightness(.97)}
+.btn.sm{min-height:40px;padding:7px 16px;font-size:.9rem}
+.row{display:flex;flex-wrap:wrap;align-items:center;gap:10px}
+.chips{display:flex;flex-wrap:wrap;gap:8px}
+.chip{font:500 .95rem var(--f-body);min-height:44px;padding:8px 16px;border:0;background:var(--soft);color:var(--ink);border-radius:999px;cursor:pointer}
+.chip:hover:not(:disabled){filter:brightness(.96)}
+.chip[aria-pressed="true"]{background:var(--sun);color:var(--on-sun);font-weight:600}
+.chip:disabled{opacity:.45;cursor:not-allowed}
+.f{display:flex;flex-direction:column;gap:6px;min-width:0}
+.f label,.lbl,legend{font-weight:600;font-size:.95rem}
+input[type="text"],textarea,select{font:inherit;width:100%;padding:12px 14px;border:1.5px solid var(--line);background:var(--card);color:var(--ink);border-radius:14px}
+input[type="text"]:focus,textarea:focus,select:focus{border-color:var(--ink)}
+textarea{min-height:96px;resize:vertical}
+input[type="file"]{font:inherit;max-width:100%}
+.err{color:var(--warn);font-size:.9rem}
+.tag{display:inline-block;padding:4px 12px;border-radius:999px;font:600 .78rem var(--f-body);background:var(--soft);color:var(--muted);white-space:nowrap}
+.tag.sun{background:var(--sun);color:var(--on-sun)}
+.tag.good{background:var(--good-soft);color:var(--good)}
+.tag.warn{background:var(--warn-soft);color:var(--warn)}
+.pct{display:flex;align-items:baseline;gap:2px;white-space:nowrap;font-family:var(--f-display)}
+.pct b{font-size:2.1rem;font-weight:700;line-height:1}
+.pct span{font-size:.95rem;color:var(--muted)}
+.bar1{height:10px;background:var(--soft);border-radius:999px;overflow:hidden}
+.bar1 i{display:block;height:100%;background:var(--sun);border-radius:999px}
+.why{display:flex;flex-direction:column;gap:6px;font-size:.95rem}
+.why li{display:flex;gap:10px;align-items:flex-start}
+.why li.warn{color:var(--warn)}
+.mk{flex:none;width:20px;height:20px;display:grid;place-items:center;border-radius:50%;font:700 .72rem var(--f-body);margin-top:2px;background:var(--good-soft);color:var(--good)}
+.why li.warn .mk{background:var(--warn-soft);color:var(--warn)}
+.back{display:inline-flex;align-items:center;gap:6px;font-weight:600;text-decoration:none;color:var(--muted);padding:10px 4px}
+.back:hover{color:var(--ink)}
+
+/* Hero */
+.hero{position:relative;overflow:hidden;background:var(--soft);border-radius:32px;padding:44px 40px;margin-top:8px}
+.hero>*{position:relative;z-index:1}
+.hero::after{content:"";position:absolute;right:-50px;bottom:-120px;width:300px;height:300px;border-radius:50%;background:var(--sun);opacity:.95}
+.hero .tag{margin-bottom:14px}
+.hero .h1{max-width:15ch;margin-bottom:14px}
+.hero .lead{max-width:48ch}
+.hero.slim{padding:32px 36px}
+
+/* Chat */
+.cols{display:grid;grid-template-columns:minmax(0,1.3fr) minmax(0,.7fr);gap:20px;align-items:start;margin-top:20px}
+.panelhead{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:10px;padding:18px 24px 0}
+.panelbody{padding:18px 24px 24px}
+.prog{height:10px;width:150px;background:var(--soft);border-radius:999px;overflow:hidden}
+.prog i{display:block;height:100%;background:var(--sun);border-radius:999px;transition:width .3s}
+.stepbox{display:flex;align-items:center;gap:12px}
+.chat{display:flex;flex-direction:column;gap:14px}
+.msg{display:flex;gap:10px;max-width:92%}
+.msg p{padding:11px 16px;overflow-wrap:anywhere}
+.msg.bot{align-self:flex-start}
+.msg.bot p{background:var(--soft);border-radius:20px 20px 20px 6px}
+.av{flex:none;width:30px;height:30px;border-radius:50%;background:var(--sun);display:grid;place-items:center}
+.av i{display:block;width:12px;height:6px;border-radius:12px 12px 0 0;background:var(--ink)}
+.msg.me{align-self:flex-end}
+.msg.me p{background:var(--sun);color:var(--on-sun);font-weight:500;border-radius:20px 20px 6px 20px}
+.ctrl{display:flex;flex-direction:column;gap:14px;padding:16px;background:var(--bg);border-radius:20px;margin-left:40px}
+.slider{display:grid;grid-template-columns:1fr auto;gap:4px 10px;align-items:center}
+.slider output{font:700 1.1rem var(--f-display)}
+.slider input{grid-column:1/-1;width:100%;accent-color:var(--ink);min-height:32px}
+.scale{display:flex;justify-content:space-between;font-size:.78rem;color:var(--muted)}
+.cv .r{display:grid;grid-template-columns:84px minmax(0,1fr);gap:10px;padding:11px 0;border-bottom:1px solid var(--line)}
+.cv .r:last-child{border-bottom:0}
+.cv dt{font-size:.82rem;font-weight:600;color:var(--muted)}
+.cv dd{overflow-wrap:anywhere}
+.cv .empty{color:var(--muted)}
+.cvnote{padding:0 24px 22px;font-size:.85rem;color:var(--muted)}
+
+/* Proposte */
+.props{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px;margin-top:18px}
+.prop{padding:22px;display:flex;flex-direction:column;gap:14px;min-width:0}
+.prop header{display:flex;justify-content:space-between;align-items:flex-start;gap:14px}
+.prop header>div:first-child{display:flex;flex-direction:column;gap:6px;align-items:flex-start;min-width:0}
+.posts{display:flex;flex-direction:column;gap:6px;border-top:1px solid var(--line);padding-top:12px}
+.post{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:8px 12px;padding:6px 0}
+.pinfo{display:flex;flex-direction:column;min-width:0}
+.pinfo span{color:var(--muted);font-size:.88rem}
+.note{font-size:.9rem;color:var(--muted)}
+.notebox{padding:12px 16px;background:var(--warn-soft);color:var(--warn);border-radius:16px;font-size:.92rem}
+.alllist{display:flex;flex-direction:column;gap:8px;margin-top:16px}
+.arow{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:8px 14px;padding:12px 18px;border-radius:20px}
+.arow .pct b{font-size:1.4rem}
+.arow .l{display:flex;flex-direction:column;min-width:0;flex:1 1 220px}
+.arow .r{display:flex;align-items:center;gap:14px}
+
+/* Pagina annuncio */
+.pgrid{display:grid;grid-template-columns:minmax(0,1.4fr) minmax(0,.8fr);gap:20px;align-items:start}
+.sect{padding:24px;display:flex;flex-direction:column;gap:12px}
+.dots li{display:flex;gap:10px;align-items:flex-start}
+.dots li::before{content:"";flex:none;width:8px;height:8px;border-radius:50%;background:var(--sun);margin-top:9px}
+.facts{display:flex;flex-wrap:wrap;gap:8px;margin-top:6px}
+.form{padding:26px;display:flex;flex-direction:column;gap:20px}
+.opt{display:flex;gap:12px;align-items:flex-start;padding:14px 16px;border:1.5px solid var(--line);border-radius:18px;cursor:pointer}
+.opt:has(input:checked){border-color:var(--ink);background:var(--soft)}
+.opt input{margin-top:5px;accent-color:var(--ink)}
+.opt small{display:block;color:var(--muted)}
+.mini{padding:12px 16px;background:var(--bg);border-radius:16px;font-size:.9rem;color:var(--muted);margin:8px 0 0 30px}
+.okbox{padding:26px;display:flex;flex-direction:column;gap:12px;border-color:var(--good)}
+
+/* Candidature e notifiche */
+.notes{display:flex;flex-direction:column;gap:14px}
+.note-card{padding:20px 22px;display:flex;flex-direction:column;gap:12px}
+.note-head{display:flex;flex-wrap:wrap;align-items:center;gap:8px 12px}
+.altl{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
+.altl li{display:flex;flex-direction:column;gap:6px;padding:14px 16px;background:var(--soft);border-radius:18px;min-width:0}
+.altl .t{display:flex;justify-content:space-between;gap:10px}
+.altl .m{font-size:.85rem;color:var(--muted)}
+.apps{display:flex;flex-direction:column;gap:12px}
+.app{padding:18px 22px;display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:12px 16px}
+.app .l{display:flex;flex-direction:column;min-width:0;flex:1 1 220px;gap:2px}
+.empty-card{padding:28px;text-align:center;color:var(--muted)}
+
+/* Area azienda */
+.subnav{display:flex;flex-wrap:wrap;gap:6px}
+.subnav a{padding:8px 16px;border-radius:999px;text-decoration:none;font-weight:600;color:var(--muted);background:var(--soft)}
+.subnav a[aria-current="page"]{background:var(--ink);color:var(--bg)}
+.plan{display:flex;flex-direction:column;gap:14px;align-items:flex-start}
+.price{font:700 2.4rem/1 var(--f-display)}
+.price span{font:500 1rem var(--f-body);color:var(--muted)}
+.checks li{display:flex;gap:10px;padding:4px 0}
+.checks li::before{content:"✓";flex:none;width:22px;height:22px;display:grid;place-items:center;border-radius:50%;background:var(--good-soft);color:var(--good);font-weight:700;font-size:.8rem;margin-top:1px}
+.list{display:flex;flex-direction:column;gap:14px}
+.cand{padding:20px 22px;display:flex;flex-direction:column;gap:14px}
+.cand.rec{border-color:var(--ink)}
+.cand.isme{box-shadow:0 0 0 3px var(--sun)}
+.ctop{display:flex;flex-wrap:wrap;justify-content:space-between;gap:12px 20px}
+.cinfo{display:flex;flex-direction:column;gap:8px;min-width:0;flex:1 1 280px}
+.chead{display:flex;flex-wrap:wrap;align-items:center;gap:6px 10px}
+.chead h3{font:700 1.2rem/1.2 var(--f-display)}
+.you{font-weight:500;color:var(--muted)}
+.meta{font-size:.85rem;color:var(--muted)}
+.quote{font-style:italic;color:var(--muted);overflow-wrap:anywhere}
+.cscore{display:flex;flex-direction:column;gap:6px;width:190px;max-width:100%}
+.break{font-size:.8rem;color:var(--muted)}
+.decide{display:flex;flex-wrap:wrap;align-items:center;gap:10px;padding-top:12px;border-top:1px solid var(--line)}
+.alts{display:flex;flex-direction:column;gap:10px;padding:16px;background:var(--bg);border-radius:20px}
+.jobcard{padding:20px 22px;display:flex;flex-wrap:wrap;justify-content:space-between;align-items:center;gap:12px 16px}
+details.rule{padding:16px 22px}
+details.rule summary{cursor:pointer;font-weight:600}
+details.rule ul{margin-top:12px;display:flex;flex-direction:column;gap:8px;font-size:.92rem}
+
+footer{margin-top:16px}
+footer .wrap{padding-block:24px 32px;font-size:.85rem;color:var(--muted);display:flex;flex-direction:column;gap:6px}
+
+#toast{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(16px + env(safe-area-inset-bottom,0px));max-width:calc(100% - 32px);background:var(--ink);color:var(--bg);padding:12px 20px;border-radius:999px;font-size:.92rem;opacity:0;pointer-events:none;transition:opacity .2s;z-index:20;text-align:center}
+#toast.show{opacity:1}
+
+/* Cookie */
+.consent{position:fixed;inset:0;z-index:50;background:rgba(10,16,30,.6);display:grid;place-items:center;padding-top:max(16px,env(safe-area-inset-top,0px));padding-bottom:max(16px,env(safe-area-inset-bottom,0px));padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));overflow-y:auto}
+.cs-card{background:var(--card);color:var(--ink);border-radius:28px;padding:28px;max-width:460px;width:100%;display:flex;flex-direction:column;gap:14px}
+.cs-sun{width:56px;height:28px;border-radius:56px 56px 0 0;background:var(--sun)}
+.check{display:flex;gap:12px;align-items:flex-start;padding:14px 16px;border:1.5px solid var(--line);border-radius:18px;cursor:pointer}
+.check input{margin-top:4px;width:18px;height:18px;accent-color:var(--ink);flex:none}
+
+@media (max-width:900px){
+  .cols,.pgrid{grid-template-columns:minmax(0,1fr)}
+}
+@media (max-width:760px){
+  .props{grid-template-columns:minmax(0,1fr)}
+  .altl{grid-template-columns:minmax(0,1fr)}
+  .hero{padding:32px 24px}
+  .hero::after{width:200px;height:200px;right:-60px;bottom:-90px}
+}
+@media (max-width:600px){
+  .ctrl{margin-left:0}
+  .msg{max-width:100%}
+  .grid2{grid-template-columns:minmax(0,1fr)}
+  .cscore{width:100%}
+  .pad,.form,.sect{padding:20px}
+}
+@media (prefers-reduced-motion:reduce){
+  *{transition:none!important;scroll-behavior:auto!important}
+}
+</style>
+
+<div id="app">
+<header class="top">
+  <div class="wrap">
+    <a class="brand" href="#apprendista" aria-label="Orizzonte, torna all'inizio">
+      <svg viewBox="0 0 36 36" aria-hidden="true"><path class="sunfill" d="M5 24a13 13 0 0 1 26 0z"/><rect class="linefill" x="2" y="26" width="32" height="3.5" rx="1.75"/></svg>
+      <span>Orizzonte</span><span class="proto">prototipo</span>
+    </a>
+    <nav class="nav" aria-label="Sezioni">
+      <a href="#apprendista" id="nav-a">Cerco un posto</a>
+      <a href="#candidature" id="nav-b">Candidature <span class="badge" id="badge" hidden>0</span></a>
+      <a href="#azienda" id="nav-c">Sono un’azienda</a>
+    </nav>
+  </div>
+</header>
+
+<main class="wrap page">
+  <!-- Giovane: domande e proposte -->
+  <section id="pg-apprendista" aria-label="Cerco un posto">
+    <div class="hero">
+      <span class="tag sun">Gratis per i giovani</span>
+      <h1 class="h1">Trova l’apprendistato che fa per te.</h1>
+      <p class="lead">Rispondi a poche domande. Orizzonte ti propone mestieri e posti per agosto 2027 e ti avvisa quando un’azienda risponde. In Svizzera circa il 17% di chi finisce la scuola media fa un anno intermedio: puoi cominciare a cercare subito.</p>
+    </div>
+
+    <div class="cols">
+      <div class="card">
+        <div class="panelhead">
+          <h2 class="h3">Parla con Orizzonte</h2>
+          <div class="stepbox"><span class="small muted num" id="stepTxt">Domanda 1 di 8</span><div class="prog" id="prog" role="progressbar" aria-label="Domande" aria-valuemin="0" aria-valuemax="8" aria-valuenow="0"><i style="width:0%"></i></div></div>
+        </div>
+        <div class="panelbody">
+          <div class="chat" id="chat" aria-live="polite"></div>
+          <div class="row" style="margin-top:18px">
+            <button type="button" class="btn ghost sm" data-act="demo">Prova con un profilo di esempio</button>
+            <button type="button" class="btn ghost sm" data-act="restart">Ricomincia</button>
+          </div>
+        </div>
+      </div>
+      <aside class="card cv" aria-label="Il tuo curriculum">
+        <div class="panelhead"><h2 class="h3">Il tuo curriculum</h2></div>
+        <div class="panelbody"><dl id="cv"></dl></div>
+        <p class="cvnote">Il punteggio usa interessi, voti, stage e zona. La frase e il mestiere che scegli non cambiano il punteggio.</p>
+      </aside>
+    </div>
+
+    <div class="sec" id="results" hidden></div>
+  </section>
+
+  <!-- Pagina di un annuncio -->
+  <section id="pg-posto" aria-label="Annuncio" hidden></section>
+
+  <!-- Candidature e notifiche -->
+  <section id="pg-candidature" aria-label="Le mie candidature" hidden></section>
+
+  <!-- Area aziende -->
+  <section id="pg-azienda" aria-label="Area aziende" hidden></section>
+</main>
+
+<footer>
+  <div class="wrap">
+    <span>Prototipo: aziende, posti e candidati sono esempi inventati e nulla viene inviato davvero. Voti nella scala svizzera da 1 a 6.</span>
+    <span>AFC significa attestato federale di capacità. Durate e requisiti dei mestieri sono indicativi e vanno verificati con l’azienda e con l’orientamento professionale.</span>
+  </div>
+</footer>
+<div id="toast" role="status" aria-live="polite"></div>
+</div>
+
+<div class="consent" id="consent" role="dialog" aria-modal="true" aria-labelledby="cs-t" hidden>
+  <div class="cs-card">
+    <div class="cs-sun" aria-hidden="true"></div>
+    <h2 class="h2" id="cs-t">Prima di entrare: i cookie</h2>
+    <p>Orizzonte usa i cookie per funzionare e per ricordare le tue scelte. Se hai meno di 18 anni, chiedi a un adulto di leggere e accettare al posto tuo.</p>
+    <label class="check" for="cs-adult"><input type="checkbox" id="cs-adult"><span>Sono maggiorenne e accetto i cookie di Orizzonte.</span></label>
+    <button type="button" class="btn" id="cs-ok" disabled>Accetta e continua</button>
+    <p class="small muted">In questo prototipo il cookie serve solo a ricordare questa scelta.</p>
+  </div>
+</div>
+
+<script id="logic">
+/* ===== Dati e punteggio (nessun accesso alla pagina) ===== */
+const AX=['mani','digitale','persone','creativo','ordine','aperto'];
+const AXPH={mani:'lavorare con le mani',digitale:'il computer',persone:'stare con le persone',creativo:'creare',ordine:'organizzare',aperto:'stare all’aperto'};
+const INTERESTS=[
+  {id:'riparare',label:'Smontare e riparare cose',w:{mani:3,aperto:.5}},
+  {id:'computer',label:'Computer e videogiochi',w:{digitale:3,ordine:.5}},
+  {id:'persone',label:'Stare con le persone',w:{persone:3}},
+  {id:'creare',label:'Disegnare e creare',w:{creativo:3,mani:.5}},
+  {id:'cucinare',label:'Cucinare',w:{mani:1.5,creativo:1.5,persone:.5}},
+  {id:'aperto',label:'Stare all’aperto',w:{aperto:3,mani:1}},
+  {id:'organizzare',label:'Organizzare e fare ordine',w:{ordine:3,digitale:.5}},
+  {id:'sport',label:'Sport e movimento',w:{persone:1.5,aperto:1.5}}
+];
+const ENVS=[
+  {id:'mani',label:'Con le mani',w:{mani:2}},
+  {id:'computer',label:'Al computer',w:{digitale:2}},
+  {id:'persone',label:'Con le persone',w:{persone:2}},
+  {id:'aperto',label:'All’aperto',w:{aperto:2}}
+];
+const FIELDS={digitale:'Informatica e media',tecnica:'Tecnica',cucina:'Cucina e alimentari',cura:'Cura e salute',commercio:'Commercio',logistica:'Logistica',natura:'Natura',costruzione:'Costruzione e legno'};
+const JOBS={
+  inf:{name:'Informatico/a AFC',field:'digitale',v:{digitale:3,ordine:1.5,creativo:1,mani:.3},mat:4.5,ling:4,years:4,tasks:['Installare e configurare computer, reti e programmi','Aiutare le persone quando hanno un problema informatico','Imparare a programmare piccole applicazioni']},
+  med:{name:'Interactive Media Designer AFC',field:'digitale',v:{creativo:3,digitale:2.5,ordine:.5},mat:4,ling:4.5,years:4,tasks:['Creare grafiche, siti web e video per i clienti','Usare programmi di disegno e di montaggio','Pensare come rendere un sito semplice da usare']},
+  ele:{name:'Elettricista di montaggio AFC',field:'tecnica',v:{mani:3,digitale:1,aperto:1,ordine:.5},mat:4.5,ling:3.5,years:4,tasks:['Montare cavi, prese e impianti elettrici in case e aziende','Leggere schemi e misurare con strumenti di precisione','Lavorare in squadra nei cantieri']},
+  aut:{name:'Meccatronico/a d’automobili AFC',field:'tecnica',v:{mani:3,digitale:1,ordine:.5},mat:4,ling:3.5,years:4,tasks:['Controllare e riparare auto con strumenti e computer di diagnosi','Cambiare freni, gomme e componenti elettronici','Spiegare ai clienti cosa serve alla loro auto']},
+  pol:{name:'Polimeccanico/a AFC',field:'tecnica',v:{mani:2.5,digitale:2,ordine:1},mat:5,ling:3.5,years:4,tasks:['Produrre pezzi di precisione con macchine a controllo numerico','Programmare e controllare le macchine','Misurare e verificare la qualità dei pezzi']},
+  cuo:{name:'Cuoco/a AFC',field:'cucina',v:{mani:2,creativo:2,persone:1,ordine:.5},mat:3.5,ling:3.5,years:3,tasks:['Preparare piatti e menù per i clienti','Imparare le tecniche di cucina e la gestione della merce','Lavorare in squadra nei momenti di punta']},
+  pan:{name:'Panettiere/a-pasticciere/a AFC',field:'cucina',v:{mani:2.5,creativo:2,ordine:1},mat:3.5,ling:3.5,years:3,tasks:['Preparare pane, dolci e torte','Gestire impasti, forni e ricette','Presentare i prodotti in negozio']},
+  oss:{name:'Operatore/trice sociosanitario/a AFC',field:'cura',v:{persone:3,ordine:1,mani:1},mat:3.5,ling:4.5,years:3,tasks:['Accompagnare e assistere le persone nella vita di tutti i giorni','Aiutare nelle cure di base e misurare i parametri vitali','Collaborare con infermieri e familiari']},
+  den:{name:'Assistente dentale AFC',field:'cura',v:{persone:2,mani:2,ordine:1},mat:3.5,ling:4.5,years:3,tasks:['Assistere il dentista durante i trattamenti','Preparare strumenti e materiali e sterilizzarli','Accogliere i pazienti e organizzare gli appuntamenti']},
+  com:{name:'Impiegato/a di commercio AFC',field:'commercio',v:{ordine:3,persone:1.5,digitale:1.5},mat:4,ling:5,years:3,tasks:['Scrivere e-mail, preparare documenti e gestire appuntamenti','Fare fatture e contabilità semplice','Parlare con clienti e fornitori']},
+  det:{name:'Impiegato/a del commercio al dettaglio AFC',field:'commercio',v:{persone:3,ordine:1.5,creativo:.5},mat:3.5,ling:4,years:3,tasks:['Consigliare i clienti e vendere i prodotti','Sistemare gli scaffali e gestire la merce','Lavorare alla cassa']},
+  log:{name:'Logistico/a AFC',field:'logistica',v:{ordine:2.5,mani:1.5,digitale:1,aperto:.5},mat:3.5,ling:3.5,years:3,tasks:['Ricevere, controllare e sistemare la merce in magazzino','Preparare le spedizioni','Usare carrelli elevatori e sistemi informatici']},
+  ort:{name:'Giardiniere/a paesaggista AFC',field:'natura',v:{aperto:3,mani:2,creativo:1},mat:3.5,ling:3.5,years:3,tasks:['Piantare, curare e potare alberi, siepi e fiori','Costruire e curare giardini e aree verdi','Lavorare all’aperto con diverse macchine']},
+  fal:{name:'Falegname AFC',field:'costruzione',v:{mani:3,creativo:1.5,ordine:1},mat:4,ling:3.5,years:4,tasks:['Lavorare il legno per costruire mobili, porte e finestre','Leggere disegni e misurare con precisione','Usare macchine e attrezzi da falegnameria']},
+  dis:{name:'Disegnatore/trice AFC',field:'costruzione',v:{creativo:2.5,digitale:2,ordine:1.5},mat:4.5,ling:4,years:4,tasks:['Disegnare piani e progetti al computer','Aiutare gli architetti a preparare le pratiche di costruzione','Visitare i cantieri e prendere le misure']}
+};
+const POSTINGS=[
+  {id:'p1',job:'inf',co:'Ticino Digitale SA',city:'Lugano',region:'Ticino',places:1},
+  {id:'p2',job:'com',co:'Fiduciaria Bernasconi',city:'Bellinzona',region:'Ticino',places:1},
+  {id:'p3',job:'ele',co:'Elettroimpianti Rossi SA',city:'Mendrisio',region:'Ticino',places:2},
+  {id:'p4',job:'aut',co:'Autorimessa Sant’Antonio',city:'Locarno',region:'Ticino',places:1},
+  {id:'p5',job:'cuo',co:'Ristorante Al Ponte',city:'Locarno',region:'Ticino',places:1},
+  {id:'p6',job:'oss',co:'Casa Anziani Girasole',city:'Lugano',region:'Ticino',places:2},
+  {id:'p7',job:'det',co:'Mercato Centro SA',city:'Bellinzona',region:'Ticino',places:2},
+  {id:'p8',job:'fal',co:'Falegnameria Ferrari',city:'Biasca',region:'Ticino',places:1},
+  {id:'p9',job:'log',co:'Logistica Gottardo SA',city:'Chiasso',region:'Ticino',places:1},
+  {id:'p10',job:'pan',co:'Panetteria Delizia',city:'Lugano',region:'Ticino',places:1},
+  {id:'p11',job:'ort',co:'Giardini Verdi Sagl',city:'Locarno',region:'Ticino',places:1},
+  {id:'p12',job:'den',co:'Studio dentistico Lombardi',city:'Lugano',region:'Ticino',places:1},
+  {id:'p13',job:'dis',co:'Studio d’architettura Alberti',city:'Lugano',region:'Ticino',places:1},
+  {id:'p14',job:'inf',co:'Limmat Systems AG',city:'Zurigo',region:'Zurigo',places:2},
+  {id:'p15',job:'pol',co:'Keller Präzision AG',city:'Winterthur',region:'Zurigo',places:1},
+  {id:'p16',job:'med',co:'Studio Nord',city:'Zurigo',region:'Zurigo',places:1},
+  {id:'p17',job:'com',co:'Hafen Treuhand AG',city:'Zurigo',region:'Zurigo',places:1},
+  {id:'p18',job:'ele',co:'Elektro Meier AG',city:'Zurigo',region:'Zurigo',places:1},
+  {id:'p19',job:'oss',co:'Pflegezentrum Seeblick',city:'Zurigo',region:'Zurigo',places:2},
+  {id:'p20',job:'cuo',co:'Gasthaus Zum Anker',city:'Zurigo',region:'Zurigo',places:1},
+  {id:'p21',job:'log',co:'Transporte Oerlikon AG',city:'Zurigo',region:'Zurigo',places:1}
+];
+const CANDS=[
+  {id:'c1',name:'Luca R.',region:'Ticino',interests:['computer','riparare'],env:'computer',mat:5.5,ling:4.5,stages:['inf'],applied:['p1','p2'],motivation:'Ho montato il mio primo PC a dodici anni e ora voglio imparare a programmare.'},
+  {id:'c2',name:'Aisha M.',region:'Ticino',interests:['persone','organizzare'],env:'persone',mat:4.5,ling:5.5,stages:['com'],applied:['p2','p6'],motivation:'Mi piace aiutare gli altri e tenere tutto in ordine.'},
+  {id:'c3',name:'Matteo B.',region:'Ticino',interests:['riparare','aperto'],env:'mani',mat:4,ling:4,stages:['ele'],applied:['p3','p4'],motivation:'Aiuto mio zio con gli impianti nei fine settimana.'},
+  {id:'c4',name:'Sara K.',region:'Ticino',interests:['persone','cucinare'],env:'persone',mat:3,ling:5,stages:['oss'],applied:['p6','p5'],motivation:'Ho fatto uno stage in una casa anziani e mi è piaciuto molto.'},
+  {id:'c5',name:'Noah F.',region:'Ticino',interests:['computer','riparare'],env:'computer',mat:4.5,ling:3.5,stages:[],applied:['p1','p3'],motivation:'Riparo telefoni e computer di amici e parenti.'},
+  {id:'c6',name:'Elena P.',region:'Ticino',interests:['cucinare','creare'],env:'mani',mat:3,ling:4,stages:['cuo'],applied:['p5','p7'],motivation:'Cucino ogni domenica per tutta la famiglia.'},
+  {id:'c7',name:'Dario S.',region:'Ticino',interests:['riparare','sport'],env:'mani',mat:5,ling:3,stages:[],applied:['p3','p4'],motivation:'Mi sono sempre piaciuti i motori.'},
+  {id:'c8',name:'Mia T.',region:'Ticino',interests:['persone','sport'],env:'persone',mat:3.5,ling:4,stages:[],applied:['p6','p7','p5'],motivation:'Alleno i bambini nella squadra di pallavolo del mio paese.'},
+  {id:'c9',name:'Jonas W.',region:'Ticino',interests:['aperto','riparare'],env:'aperto',mat:3.5,ling:3,stages:[],applied:['p3','p11'],motivation:'Preferisco stare fuori e lavorare con le mani.'},
+  {id:'c10',name:'Giulia C.',region:'Ticino',interests:['organizzare','computer'],env:'computer',mat:5,ling:5,stages:['com'],applied:['p1','p2'],motivation:'Sono precisa e mi piace trovare il modo più semplice di fare le cose.'},
+  {id:'c11',name:'Fabio L.',region:'Ticino',interests:['persone','organizzare'],env:'persone',mat:4,ling:3.5,stages:[],applied:['p6','p7','p2'],motivation:'Lavoro bene in squadra.'},
+  {id:'z1',name:'Nina H.',region:'Zurigo',interests:['computer','creare'],env:'computer',mat:5,ling:5,stages:['med'],applied:['p14','p16'],motivation:'Disegno al tablet e sto imparando a fare piccoli siti web.'},
+  {id:'z2',name:'Elias B.',region:'Zurigo',interests:['computer','riparare'],env:'computer',mat:5.5,ling:4,stages:['inf'],applied:['p14','p15'],motivation:'Ho costruito un piccolo server a casa per i miei giochi.'},
+  {id:'z3',name:'Lea S.',region:'Zurigo',interests:['persone','organizzare'],env:'persone',mat:3,ling:5,stages:['oss'],applied:['p19','p17'],motivation:'Voglio un lavoro in cui sono utile alle persone.'},
+  {id:'z4',name:'Arda Y.',region:'Zurigo',interests:['riparare','sport'],env:'mani',mat:4.5,ling:3.5,stages:[],applied:['p14','p15','p18'],motivation:'Mi piace capire come funzionano le macchine.'},
+  {id:'z5',name:'Zoe M.',region:'Zurigo',interests:['persone','creare'],env:'persone',mat:3.5,ling:4.5,stages:[],applied:['p19','p17','p20'],motivation:'Mi piace creare cose belle per gli altri.'},
+  {id:'z6',name:'Timo G.',region:'Zurigo',interests:['computer','organizzare'],env:'computer',mat:4,ling:4,stages:[],applied:['p14','p17','p21'],motivation:'Tengo in ordine i file e le liste di tutta la mia classe.'},
+  {id:'z7',name:'Anna V.',region:'Zurigo',interests:['persone','cucinare'],env:'persone',mat:4,ling:4.5,stages:[],applied:['p19','p20'],motivation:'Mi piace prendermi cura degli altri.'}
+];
+
+const clamp=(x,a,b)=>Math.min(b,Math.max(a,x));
+function vec(c){
+  const v={};AX.forEach(a=>v[a]=0);
+  c.interests.forEach(id=>{const it=INTERESTS.find(x=>x.id===id);if(it)for(const k in it.w)v[k]+=it.w[k];});
+  const e=ENVS.find(x=>x.id===c.env);if(e)for(const k in e.w)v[k]+=e.w[k];
+  return v;
+}
+const norm=v=>Math.sqrt(AX.reduce((s,a)=>s+(v[a]||0)**2,0));
+function jobVec(j){const v={};AX.forEach(a=>v[a]=j.v[a]||0);return v;}
+/* c: candidato, jobId: mestiere, posting: posto (o null per il solo mestiere) */
+function score(c,jobId,posting){
+  const j=JOBS[jobId],s=vec(c),jv=jobVec(j),ns=norm(s),nj=norm(jv);
+  const cos=ns&&nj?AX.reduce((t,a)=>t+s[a]*jv[a],0)/(ns*nj):0;
+  const interest=Math.round(55*clamp((cos-.3)/.6,0,1));
+  const dm=Math.max(0,j.mat-c.mat),dl=Math.max(0,j.ling-c.ling);
+  const grades=Math.round(25*(clamp(1-dm/1.5,0,1)+clamp(1-dl/1.5,0,1))/2);
+  let stage=0;
+  if(c.stages.includes(jobId))stage=12;
+  else if(c.stages.some(x=>JOBS[x].field===j.field))stage=6;
+  let region=0;
+  if(posting)region=c.region===posting.region?8:(c.region==='Altro'?4:2);
+  const raw=interest+grades+stage;
+  const total=posting?raw+region:Math.round(raw/92*100);
+  return {interest,grades,stage,region,total,dm,dl,ns,nj,s,jv,cos};
+}
+const fmt=n=>Number(n).toFixed(1);
+function reasons(c,jobId,sc,you){
+  const j=JOBS[jobId],out=[];
+  if(sc.ns&&sc.nj){
+    const top=AX.map(a=>({a,v:(sc.s[a]/sc.ns)*(sc.jv[a]/sc.nj)})).sort((x,y)=>y.v-x.v).filter(x=>x.v>.1).slice(0,2);
+    if(sc.interest>=20&&top.length)out.push({k:'ok',t:'Interessi in linea: '+top.map(x=>AXPH[x.a]).join(' e ')});
+    else out.push({k:'warn',t:'Interessi poco legati a questo mestiere'});
+  }
+  if(sc.dm>0)out.push({k:'warn',t:'Matematica '+fmt(c.mat)+': il mestiere chiede '+fmt(j.mat)});
+  if(sc.dl>0)out.push({k:'warn',t:'Lingue '+fmt(c.ling)+': il mestiere chiede '+fmt(j.ling)});
+  if(!sc.dm&&!sc.dl)out.push({k:'ok',t:'Voti nei requisiti: matematica '+fmt(c.mat)+', lingue '+fmt(c.ling)});
+  if(c.stages.includes(jobId))out.push({k:'ok',t:(you?'Hai':'Ha')+' già fatto uno stage in questo mestiere'});
+  else if(sc.stage>0)out.push({k:'ok',t:(you?'Hai':'Ha')+' fatto uno stage in un mestiere affine'});
+  return out;
+}
+/* Fino a 3 posti alternativi: punteggio >= 40, aziende diverse, al massimo 2 dello stesso mestiere */
+function alternatives(c,excludeIds){
+  const list=POSTINGS.filter(p=>!excludeIds.includes(p.id)).map(p=>({p,sc:score(c,p.job,p)}))
+    .sort((a,b)=>b.sc.total-a.sc.total||a.p.id.localeCompare(b.p.id,'en',{numeric:true}));
+  const out=[],jobs={},cos=new Set();
+  for(const x of list){
+    if(x.sc.total<40)break;
+    if(cos.has(x.p.co)||(jobs[x.p.job]||0)>=2)continue;
+    out.push(x);cos.add(x.p.co);jobs[x.p.job]=(jobs[x.p.job]||0)+1;
+    if(out.length===3)break;
+  }
+  return out;
+}
+</script>
+
+<script id="ui">
+/* ===== Interfaccia ===== */
+const $=s=>document.querySelector(s);
+const esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const CANTON={Ticino:'TI',Zurigo:'ZH',Altro:'CH'};
+const regionLabel=r=>r==='Altro'?'Altro cantone':r;
+const labelOf=id=>(INTERESTS.find(x=>x.id===id)||{}).label||id;
+const envLabel=id=>(ENVS.find(x=>x.id===id)||{}).label||'';
+const plural=(n,a,b)=>n+' '+(n===1?a:b);
+const postOf=id=>POSTINGS.find(p=>p.id===id);
+const reduce=window.matchMedia&&matchMedia('(prefers-reduced-motion: reduce)').matches;
+const Q=8;
+
+const fresh=()=>({name:'',region:'',interests:[],env:'',mat:4.5,ling:4.5,gradesSet:false,stages:[],stagesSet:false,wish:'',motivation:'',done:false});
+let me=fresh(),step=0,page={name:'apprendista',id:null};
+const appsData={};      // idAnnuncio -> {cv,file,comment}
+const dec={};           // 'idAnnuncio:idCandidato' -> 'invite' | 'reject'
+const notes=[];         // notifiche del giovane
+const extra={};         // idAnnuncio -> candidati di esempio arrivati su annunci nuovi
+let co=null,cPost=null,showAll=false,nCount=0;
+let form={cv:'profile'};
+
+const meCand=()=>({id:'me',isMe:true,name:me.name,region:me.region,interests:me.interests,env:me.env,mat:me.mat,ling:me.ling,stages:me.stages,motivation:me.motivation,applied:Object.keys(appsData)});
+function applicants(pid){
+  const p=postOf(pid);
+  const list=CANDS.filter(c=>c.applied.includes(pid)||(extra[pid]||[]).includes(c.id));
+  if(me.done&&appsData[pid])list.push(meCand());
+  return list.map(c=>({c,sc:score(c,p.job,p)})).sort((a,b)=>b.sc.total-a.sc.total||a.c.name.localeCompare(b.c.name));
+}
+function ranked(pid){
+  const p=postOf(pid),r=applicants(pid);
+  r.forEach((x,i)=>{x.rec=i<p.places&&x.sc.total>=50;});
+  return r;
+}
+const myPostings=()=>co?POSTINGS.filter(p=>p.co===co.name&&(co.demo?!p.own:p.own)):[];
+function aboutText(p){
+  return p.desc?p.desc:`${p.co} è un’azienda di ${p.city} (${CANTON[p.region]}). Cerca ${plural(p.places,'apprendista','apprendisti')} per ${JOBS[p.job].name} da agosto 2027. Un formatore o una formatrice ti segue per tutta la durata dell’apprendistato.`;
+}
+function statusOf(pid){const d=dec[pid+':me'];return d==='invite'?'invite':d==='reject'?'reject':'sent';}
+
+/* ---------- Domande ---------- */
+const botMsg=t=>`<div class="msg bot"><span class="av" aria-hidden="true"><i></i></span><p>${t}</p></div>`;
+const meMsg=t=>`<div class="msg me"><p>${t}</p></div>`;
+const ASK=[
+  ()=>'Ciao, sono Orizzonte. Ti faccio poche domande e poi ti propongo mestieri e posti di apprendistato adatti a te. Come ti chiami?',
+  ()=>`Piacere, ${esc(me.name)}. In quale zona vuoi fare l’apprendistato?`,
+  ()=>'Cosa ti piace fare nel tempo libero? Scegline fino a 3.',
+  ()=>'Dove ti vedi meglio a lavorare?',
+  ()=>'Come vanno i voti a scuola? Usa la scala svizzera: 6 è il massimo, 4 è la sufficienza.',
+  ()=>'Hai già fatto stage o giornate di prova? Scegli i mestieri, fino a 3.',
+  ()=>'Che mestiere ti piacerebbe fare? Se non lo sai ancora va benissimo, puoi saltare la domanda.',
+  ()=>'Vuoi scrivere una frase per l’azienda? La legge insieme al tuo curriculum.',
+  ()=>`Fatto, ${esc(me.name)}. Qui sotto trovi le proposte per l’inizio di agosto 2027.`
+];
+const ANS=[
+  ()=>esc(me.name),
+  ()=>esc(regionLabel(me.region)),
+  ()=>esc(me.interests.map(labelOf).join(', ')),
+  ()=>esc(envLabel(me.env)),
+  ()=>`Matematica ${fmt(me.mat)}, lingue ${fmt(me.ling)}`,
+  ()=>me.stages.length?esc(me.stages.map(id=>JOBS[id].name).join(', ')):'Nessuno stage',
+  ()=>me.wish?esc(JOBS[me.wish].name):'Non lo so ancora',
+  ()=>me.motivation?'“'+esc(me.motivation)+'”':'Salto questa domanda'
+];
+function controls(n){
+  if(n===0)return `<form class="ctrl" data-form="name" novalidate>
+    <label class="lbl" for="f-name">Il tuo nome</label>
+    <input id="f-name" type="text" maxlength="30" autocomplete="given-name" placeholder="Per esempio: Alex" value="${esc(me.name)}">
+    <p class="err" id="name-err" role="alert" hidden>Scrivi il tuo nome per continuare.</p>
+    <div class="row"><button class="btn" type="submit">Avanti</button></div></form>`;
+  if(n===1)return `<div class="ctrl"><div class="chips" role="group" aria-label="Zona">${
+    ['Ticino','Zurigo','Altro'].map(r=>`<button type="button" class="chip" data-act="region" data-v="${r}">${esc(regionLabel(r))}</button>`).join('')}</div></div>`;
+  if(n===2)return `<div class="ctrl"><div class="chips" role="group" aria-label="Interessi">${
+    INTERESTS.map(it=>{const on=me.interests.includes(it.id),dis=!on&&me.interests.length>=3;
+      return `<button type="button" class="chip" data-act="int" data-v="${it.id}" aria-pressed="${on}" ${dis?'disabled':''}>${esc(it.label)}</button>`;}).join('')}</div>
+    <div class="row"><button type="button" class="btn" data-act="intNext" ${me.interests.length?'':'disabled'}>Avanti</button><span class="small muted num">${me.interests.length} di 3 scelti</span></div></div>`;
+  if(n===3)return `<div class="ctrl"><div class="chips" role="group" aria-label="Ambiente di lavoro">${
+    ENVS.map(e=>`<button type="button" class="chip" data-act="env" data-v="${e.id}">${esc(e.label)}</button>`).join('')}</div></div>`;
+  if(n===4)return `<div class="ctrl">
+    <div class="slider"><label class="lbl" for="f-mat">Matematica</label><output id="o-mat" for="f-mat">${fmt(me.mat)}</output><input id="f-mat" type="range" min="1" max="6" step="0.5" value="${me.mat}" data-g="mat"></div>
+    <div class="slider"><label class="lbl" for="f-ling">Lingue (italiano, tedesco, francese, inglese)</label><output id="o-ling" for="f-ling">${fmt(me.ling)}</output><input id="f-ling" type="range" min="1" max="6" step="0.5" value="${me.ling}" data-g="ling"></div>
+    <div class="scale" aria-hidden="true"><span>1</span><span>4 sufficiente</span><span>6</span></div>
+    <div class="row"><button type="button" class="btn" data-act="grades">Avanti</button></div></div>`;
+  if(n===5)return `<div class="ctrl"><div class="chips" role="group" aria-label="Stage già fatti">${
+    Object.keys(JOBS).map(id=>{const on=me.stages.includes(id),dis=!on&&me.stages.length>=3;
+      return `<button type="button" class="chip" data-act="stg" data-v="${id}" aria-pressed="${on}" ${dis?'disabled':''}>${esc(JOBS[id].name)}</button>`;}).join('')}</div>
+    <div class="row"><button type="button" class="btn" data-act="stgNext" ${me.stages.length?'':'disabled'}>Avanti</button><button type="button" class="btn ghost" data-act="nostage">Nessuno stage</button></div></div>`;
+  if(n===6)return `<div class="ctrl"><div class="chips" role="group" aria-label="Mestiere che vorresti fare">${
+    Object.keys(JOBS).map(id=>`<button type="button" class="chip" data-act="wish" data-v="${id}">${esc(JOBS[id].name)}</button>`).join('')}</div>
+    <div class="row"><button type="button" class="btn ghost" data-act="nowish">Non lo so ancora</button></div></div>`;
+  if(n===7)return `<div class="ctrl">
+    <label class="lbl" for="f-mot">Una frase su di te (facoltativa)</label>
+    <textarea id="f-mot" maxlength="140" placeholder="Per esempio: Smonto e rimonto biciclette da quando ho dieci anni.">${esc(me.motivation)}</textarea>
+    <div class="row"><button type="button" class="btn" data-act="mot">Vedi le proposte</button><button type="button" class="btn ghost" data-act="skip">Salta</button><span class="small muted num" id="mot-n">${me.motivation.length}/140</span></div></div>`;
+  return '';
+}
+function renderChat(scrollNew){
+  let h='';
+  for(let i=0;i<Math.min(step,Q);i++)h+=botMsg(ASK[i]())+meMsg(ANS[i]());
+  h+=botMsg(ASK[step]())+controls(step);
+  $('#chat').innerHTML=h;
+  const t=step<Q?`Domanda ${step+1} di ${Q}`:'Domande completate';
+  $('#stepTxt').textContent=t;
+  const pg=$('#prog');pg.setAttribute('aria-valuenow',Math.min(step,Q));pg.firstElementChild.style.width=(Math.min(step,Q)/Q*100)+'%';
+  if(scrollNew){const l=$('#chat').lastElementChild;if(l)l.scrollIntoView({block:'nearest',behavior:reduce?'auto':'smooth'});}
+}
+function renderCV(){
+  const row=(k,v)=>`<div class="r"><dt>${k}</dt><dd>${v||'<span class="empty">—</span>'}</dd></div>`;
+  $('#cv').innerHTML=
+    row('Nome',esc(me.name))+
+    row('Zona',me.region?esc(regionLabel(me.region)):'')+
+    row('Interessi',esc(me.interests.map(labelOf).join(', ')))+
+    row('Ambiente',esc(envLabel(me.env)))+
+    row('Voti',me.gradesSet?`<span class="num">Matematica ${fmt(me.mat)} · Lingue ${fmt(me.ling)}</span>`:'')+
+    row('Stage',me.stagesSet?(me.stages.length?esc(me.stages.map(id=>JOBS[id].name).join(', ')):'Nessuno'):'')+
+    row('Mestiere',me.done?(me.wish?esc(JOBS[me.wish].name):'Non ancora scelto'):'')+
+    row('Inizio','<span class="num">Agosto 2027</span>')+
+    row('Frase',me.motivation?'“'+esc(me.motivation)+'”':'');
+}
+
+/* ---------- Proposte ---------- */
+function postLink(p){
+  return appsData[p.id]
+    ?`<span class="tag good">✓ Candidatura inviata</span><a class="btn ghost sm" href="#posto-${p.id}">Vedi</a>`
+    :`<a class="btn sm" href="#posto-${p.id}">Vedi e candidati</a>`;
+}
+function postsFor(jobId){
+  const all=POSTINGS.filter(p=>p.job===jobId);
+  if(me.region==='Altro')return {list:all.slice(0,3),note:''};
+  const mine=all.filter(p=>p.region===me.region);
+  if(mine.length)return {list:mine.slice(0,3),note:''};
+  const others=all.slice(0,2);
+  return {list:others,note:others.length?`Nessun posto in ${regionLabel(me.region)} per ora. Questi sono in un altro cantone:`:'Nessun posto libero per ora.'};
+}
+function renderResults(){
+  const sec=$('#results');
+  if(!me.done){sec.hidden=true;sec.innerHTML='';return;}
+  const all=Object.keys(JOBS).map(id=>({id,sc:score(me,id,null)})).sort((a,b)=>b.sc.total-a.sc.total||b.sc.interest-a.sc.interest);
+  const list=[];
+  if(me.wish)list.push({id:me.wish,sc:score(me,me.wish,null),wish:true});
+  all.filter(x=>x.id!==me.wish).slice(0,me.wish?3:4).forEach(x=>list.push(x));
+  const cards=list.map((x,i)=>{
+    const j=JOBS[x.id],pf=postsFor(x.id);
+    const why=reasons(me,x.id,x.sc,true).map(r=>`<li class="${r.k}"><span class="mk" aria-hidden="true">${r.k==='ok'?'✓':'!'}</span><span>${esc(r.t)}</span></li>`).join('');
+    const rows=pf.list.map(p=>`<div class="post"><div class="pinfo"><strong>${esc(p.co)}</strong><span>${esc(p.city)} (${CANTON[p.region]}) · ${plural(p.places,'posto','posti')}</span></div><div class="row">${postLink(p)}</div></div>`).join('');
+    const wishNote=x.wish&&x.sc.total<55?'<p class="notebox">Per ora è meno in linea con le tue risposte, ma puoi candidarti lo stesso o provare prima uno stage.</p>':'';
+    return `<article class="card prop">
+      <header><div><span class="tag ${x.wish?'sun':''}">${x.wish?'Il mestiere che hai scelto':'Proposta '+(me.wish?i:i+1)}</span><h3 class="h3">${esc(j.name)}</h3></div>
+      <div class="pct" role="img" aria-label="Compatibilità ${x.sc.total} su 100"><b class="num">${x.sc.total}</b><span>%</span></div></header>
+      <div class="bar1" aria-hidden="true"><i style="width:${x.sc.total}%"></i></div>
+      ${wishNote}<ul class="why">${why}</ul>
+      <div class="posts">${pf.note?`<p class="note">${esc(pf.note)}</p>`:''}${rows||(pf.note?'':'<p class="note">Nessun posto libero per ora.</p>')}</div>
+    </article>`;
+  }).join('');
+  const every=POSTINGS.map(p=>({p,sc:score(me,p.job,p)})).sort((a,b)=>b.sc.total-a.sc.total);
+  const shown=showAll?every:every.slice(0,6);
+  const arows=shown.map(a=>`<div class="card arow"><div class="l"><strong>${esc(JOBS[a.p.job].name)}${a.p.own?' <span class="tag sun">Nuovo</span>':''}</strong><span class="small muted">${esc(a.p.co)} · ${esc(a.p.city)} (${CANTON[a.p.region]})</span></div><div class="r"><div class="pct"><b class="num">${a.sc.total}</b><span>%</span></div>${postLink(a.p)}</div></div>`).join('');
+  sec.hidden=false;
+  sec.innerHTML=`<h2 class="h1s">Le tue proposte, ${esc(me.name)}</h2>
+    <p class="lead" style="margin-top:8px">Ordinate per compatibilità con il tuo curriculum. Puoi candidarti a più posti: l’azienda decide sempre.</p>
+    <div class="props">${cards}</div>
+    <h2 class="h2" style="margin-top:36px">Tutti gli annunci per te</h2>
+    <div class="alllist">${arows}</div>
+    <div class="row" style="margin-top:14px"><button type="button" class="btn ghost" data-act="showall">${showAll?'Mostra meno annunci':'Mostra tutti gli annunci ('+every.length+')'}</button></div>`;
+}
+
+/* ---------- Pagina annuncio ---------- */
+function renderPosting(pid){
+  const p=postOf(pid),j=JOBS[p.job],ap=appsData[pid];
+  const sc=me.done?score(meCand(),p.job,p):null;
+  const why=sc?reasons(me,p.job,sc,true).map(r=>`<li class="${r.k}"><span class="mk" aria-hidden="true">${r.k==='ok'?'✓':'!'}</span><span>${esc(r.t)}</span></li>`).join(''):'';
+  let apply;
+  if(ap){
+    const st=statusOf(pid);
+    apply=`<div class="card okbox"><span class="tag good" style="align-self:flex-start">✓ Candidatura inviata</span>
+      <h2 class="h2">Hai inviato la candidatura a ${esc(p.co)}</h2>
+      <p>${ap.cv==='file'?'Curriculum: file '+esc(ap.file):'Curriculum: quello fatto con Orizzonte'}.</p>
+      ${ap.comment?`<p class="muted">Il tuo commento: “${esc(ap.comment)}”</p>`:''}
+      <p>${st==='sent'?'Quando l’azienda risponde, Orizzonte ti manda una notifica. Se questo posto non va, ti propone subito altre strade.':st==='invite'?'L’azienda ti ha invitato al colloquio.':'L’azienda ha scelto altri profili. Trovi le alternative nelle notifiche.'}</p>
+      <div class="row"><a class="btn" href="#candidature">Vedi le mie candidature</a><a class="btn ghost" href="#apprendista">Torna alle proposte</a></div></div>`;
+  }else if(!me.done){
+    apply=`<div class="card form"><h2 class="h2">Candidati a questo posto</h2><p>Prima completa il tuo curriculum: bastano poche domande e per te è gratis.</p><div class="row"><a class="btn" href="#apprendista">Compila il curriculum</a></div></div>`;
+  }else{
+    apply=`<form class="card form" data-form="apply" data-p="${p.id}" novalidate>
+      <h2 class="h2">Candidati a questo posto</h2>
+      <fieldset class="stack-s"><legend>1. Il tuo curriculum</legend>
+        <label class="opt"><input type="radio" name="cv" value="profile" ${form.cv==='profile'?'checked':''}><span><strong>Usa il curriculum fatto con Orizzonte</strong><small>Zona, interessi, voti e stage che hai inserito.</small></span></label>
+        <div class="mini">${esc(me.name)} · ${esc(regionLabel(me.region))} · matematica ${fmt(me.mat)}, lingue ${fmt(me.ling)}${me.stages.length?' · stage: '+esc(me.stages.map(id=>JOBS[id].name).join(', ')):''}</div>
+        <label class="opt"><input type="radio" name="cv" value="file" ${form.cv==='file'?'checked':''}><span><strong>Carica un tuo file</strong><small>PDF o Word. In questo prototipo il file resta sul tuo dispositivo.</small></span></label>
+        <input type="file" id="cv-file" accept=".pdf,.doc,.docx" style="margin-left:30px" ${form.cv==='file'?'':'disabled'} aria-label="File del curriculum">
+      </fieldset>
+      <div class="f"><label for="ap-msg">2. Scrivi qualche riga per l’azienda (facoltativo)</label><textarea id="ap-msg" maxlength="500" placeholder="Per esempio: perché ti interessa questo mestiere."></textarea></div>
+      <p class="err" id="ap-err" role="alert" hidden></p>
+      <div class="row"><button class="btn" type="submit">Invia candidatura</button><span class="small muted">Per te è gratis.</span></div>
+    </form>`;
+  }
+  $('#pg-posto').innerHTML=`<a class="back" href="#apprendista">← Torna alle proposte</a>
+  <div class="stack">
+    <div class="card pad stack-s">
+      <p class="small muted">Annuncio per agosto 2027${p.own?' · nuovo':''}</p>
+      <h1 class="h1s">${esc(p.co)}</h1>
+      <p class="lead">${esc(j.name)} · ${esc(p.city)} (${CANTON[p.region]})</p>
+      <div class="facts"><span class="tag">${plural(p.places,'posto','posti')}</span><span class="tag">${j.years} anni</span><span class="tag">${esc(FIELDS[j.field])}</span></div>
+    </div>
+    <div class="pgrid">
+      <div class="stack">
+        <div class="card sect"><h2 class="h3">L’azienda</h2><p>${esc(aboutText(p))}</p></div>
+        <div class="card sect"><h2 class="h3">Cosa farai</h2><ul class="dots stack-s">${j.tasks.map(t=>`<li>${esc(t)}</li>`).join('')}</ul></div>
+        <div class="card sect"><h2 class="h3">Cosa serve</h2><p>Voti indicativi: matematica ${fmt(j.mat)} e lingue ${fmt(j.ling)} o più (scala da 1 a 6). Contano anche interesse, puntualità e voglia di imparare.</p></div>
+        <div class="card sect"><h2 class="h3">Durata e scuola</h2><p>L’apprendistato dura di solito ${j.years} anni. Lavori in azienda e vai uno o due giorni a settimana alla scuola professionale. Alla fine ottieni l’attestato federale di capacità (AFC).</p></div>
+      </div>
+      <aside class="card sect"><h2 class="h3">Quanto è in linea con te</h2>
+        ${sc?`<div class="pct"><b class="num">${sc.total}</b><span>/100</span></div><div class="bar1" aria-hidden="true"><i style="width:${sc.total}%"></i></div><ul class="why">${why}</ul>`:'<p class="note">Completa il curriculum per vedere quanto questo posto è in linea con te.</p>'}
+      </aside>
+    </div>
+    ${apply}
+  </div>`;
+}
+
+/* ---------- Candidature e notifiche ---------- */
+function altList(alts){
+  if(!alts.length)return '<p class="note">Nessuna alternativa vicina per ora. Prova a cambiare zona o a fare uno stage in un mestiere affine.</p>';
+  return '<ul class="altl">'+alts.map(a=>`<li><div class="t"><strong>${esc(JOBS[a.p.job].name)}</strong><span class="pct"><b class="num" style="font-size:1.2rem">${a.sc.total}</b><span>%</span></span></div><span class="m">${esc(a.p.co)} · ${esc(a.p.city)} (${CANTON[a.p.region]}) · ${plural(a.p.places,'posto','posti')}</span><div class="row"><a class="btn sm" href="#posto-${a.p.id}">Vedi e candidati</a></div></li>`).join('')+'</ul>';
+}
+function renderCandidature(){
+  const unread=new Set(notes.filter(n=>!n.read).map(n=>n.id));
+  const nh=notes.map(n=>{
+    const p=postOf(n.pid),j=JOBS[p.job],isNew=unread.has(n.id)?'<span class="tag sun">Nuova</span>':'';
+    if(n.kind==='invite')return `<article class="card note-card"><div class="note-head">${isNew}<span class="tag good">Colloquio</span></div><h3 class="h3">${esc(p.co)} ti invita al colloquio</h3><p>Hanno guardato il tuo curriculum per ${esc(j.name)} e vogliono conoscerti. L’azienda ti contatterà con data e ora.</p></article>`;
+    const alts=n.alts.map(a=>({p:postOf(a.pid),sc:{total:a.total}}));
+    return `<article class="card note-card"><div class="note-head">${isNew}<span class="tag">Risposta</span></div><h3 class="h3">${esc(p.co)} ha scelto altri profili</h3><p>Per ${esc(j.name)} questa volta non è andata. Orizzonte ha cercato altri posti in linea con il tuo curriculum:</p>${altList(alts)}</article>`;
+  }).join('');
+  const ids=Object.keys(appsData);
+  const ah=ids.map(pid=>{
+    const p=postOf(pid),j=JOBS[p.job],st=statusOf(pid);
+    const tag=st==='invite'?'<span class="tag good">Invitato al colloquio</span>':st==='reject'?'<span class="tag">Non selezionato</span>':'<span class="tag warn">In attesa di risposta</span>';
+    return `<article class="card app"><div class="l"><strong>${esc(p.co)}</strong><span class="small muted">${esc(j.name)} · ${esc(p.city)} (${CANTON[p.region]})</span></div>${tag}<div class="row"><a class="btn ghost sm" href="#posto-${pid}">Vedi annuncio</a>${st==='sent'?`<button type="button" class="btn ghost sm" data-act="simulate" data-p="${pid}">Simula la risposta (prototipo)</button>`:''}</div></article>`;
+  }).join('');
+  $('#pg-candidature').innerHTML=`<div class="hero slim"><h1 class="h1s">Le tue candidature</h1><p class="lead">Qui trovi le risposte delle aziende. Se un posto non va, ti proponiamo subito altre strade.</p></div>
+  <div class="stack" style="margin-top:24px">
+    <h2 class="h2">Notifiche</h2>
+    ${nh?`<div class="notes">${nh}</div>`:'<div class="card empty-card">Nessuna notifica per ora. Quando un’azienda risponde, la trovi qui.</div>'}
+    <h2 class="h2" style="margin-top:12px">Candidature inviate</h2>
+    ${ah?`<div class="apps">${ah}</div>`:`<div class="card empty-card">Non hai ancora inviato candidature. <a href="#apprendista"><strong>Guarda le proposte</strong></a>.</div>`}
+  </div>`;
+  notes.forEach(n=>n.read=true);updateBadge();
+}
+function updateBadge(){
+  const n=notes.filter(x=>!x.read).length,b=$('#badge');
+  b.textContent=n;b.hidden=n===0;
+}
+function pushNote(pid,kind){
+  const n={id:notes.length+1,pid,kind,read:false};
+  if(kind==='reject')n.alts=alternatives(meCand(),[pid,...Object.keys(appsData)]).map(a=>({pid:a.p.id,total:a.sc.total}));
+  notes.unshift(n);updateBadge();
+}
+function decideCand(pid,cid,kind){
+  dec[pid+':'+cid]=kind;
+  if(cid==='me'){pushNote(pid,kind);return;}
+  const c=CANDS.find(x=>x.id===cid);
+  toast(kind==='invite'?`${c.name} riceve l’invito al colloquio`:`${c.name} è stato avvisato e riceve altre proposte`);
+}
+
+/* ---------- Area aziende ---------- */
+function subnav(active){
+  const l=[['azienda','Annunci'],['azienda-nuovo','Nuovo annuncio'],['azienda-candidati','Candidati']];
+  return `<nav class="subnav" aria-label="Area aziende">${l.map(([h,t])=>`<a href="#${h}" ${h===active?'aria-current="page"':''}>${t}</a>`).join('')}</nav>`;
+}
+function accountView(){
+  return `<div class="hero slim"><h1 class="h1s">Area aziende</h1><p class="lead">Pubblica annunci e scegli tra i candidati consigliati. Solo le aziende con un account vedono i candidati. Per i giovani cercare un posto è gratis.</p></div>
+  <div class="narrow stack" style="margin-top:24px">
+    <form class="card pad stack" data-form="account" novalidate>
+      <h2 class="h2">Crea l’account della tua azienda</h2>
+      <div class="f"><label for="co-name">Nome dell’azienda</label><input id="co-name" type="text" maxlength="60" autocomplete="organization"></div>
+      <div class="grid2"><div class="f"><label for="co-city">Città</label><input id="co-city" type="text" maxlength="40"></div>
+      <div class="f"><label for="co-region">Cantone</label><select id="co-region"><option value="Ticino">Ticino</option><option value="Zurigo">Zurigo</option><option value="Altro">Altro cantone</option></select></div></div>
+      <p class="err" id="co-err" role="alert" hidden></p>
+      <div class="row"><button class="btn" type="submit">Crea account</button><button type="button" class="btn ghost" data-act="demoCo">Entra con un’azienda di esempio</button></div>
+      <p class="small muted">Prototipo: non serve la password e non viene salvato nulla.</p>
+    </form></div>`;
+}
+function subscriptionView(){
+  return `<div class="hero slim"><h1 class="h1s">Attiva l’abbonamento</h1><p class="lead">Ciao, ${esc(co.name)}. Per pubblicare annunci e vedere i candidati serve un abbonamento. Per i giovani Orizzonte resta gratis.</p></div>
+  <div class="narrow" style="margin-top:24px"><div class="card pad plan">
+    <span class="tag sun">Abbonamento aziende</span>
+    <p class="price num">CHF 49 <span>al mese</span></p>
+    <p class="small muted">Prezzo di esempio, da definire.</p>
+    <ul class="checks"><li>Pubblichi annunci di apprendistato</li><li>Vedi tutti i candidati con il punteggio di Orizzonte</li><li>Scegli chi invitare al colloquio, con notifica automatica</li><li>Chi non viene scelto riceve subito altre proposte</li></ul>
+    <div class="row"><button type="button" class="btn" data-act="subscribe">Attiva l’abbonamento</button><button type="button" class="btn ghost" data-act="logout">Esci</button></div>
+    <p class="small muted">Simulazione: non viene addebitato nulla.</p>
+  </div></div>`;
+}
+function dashboardView(){
+  const mine=myPostings();
+  const cards=mine.map(p=>{
+    const r=ranked(p.id);
+    return `<article class="card jobcard"><div class="stack-s" style="min-width:0"><h3 class="h3">${esc(JOBS[p.job].name)}</h3><span class="small muted">${esc(p.city)} (${CANTON[p.region]}) · ${plural(p.places,'posto','posti')} · online</span>
+      <div class="facts"><span class="tag">${plural(r.length,'candidato','candidati')}</span><span class="tag sun">${r.filter(x=>x.rec).length} consigliati</span></div></div>
+      <button type="button" class="btn" data-act="seeCands" data-p="${p.id}">Vedi i candidati</button></article>`;
+  }).join('');
+  return `<div class="stack">
+    <div class="row" style="justify-content:space-between"><div class="stack-s"><h1 class="h1s">${esc(co.name)}</h1><div class="row"><span class="tag good">Abbonamento attivo</span><span class="small muted">${esc(co.city)} (${CANTON[co.region]})</span></div></div>
+      <div class="row"><a class="btn" href="#azienda-nuovo">Nuovo annuncio</a><button type="button" class="btn ghost" data-act="logout">Esci</button></div></div>
+    ${subnav('azienda')}
+    ${cards?`<div class="list">${cards}</div>`:'<div class="card empty-card"><p>Non hai ancora annunci.</p><p style="margin-top:12px"><a class="btn" href="#azienda-nuovo">Pubblica il primo annuncio</a></p></div>'}
+  </div>`;
+}
+function newListingView(){
+  return `<div class="stack"><div class="stack-s"><h1 class="h1s">Nuovo annuncio</h1>${subnav('azienda-nuovo')}</div>
+  <form class="card pad stack" data-form="listing" novalidate>
+    <div class="f"><label for="n-job">Mestiere</label><select id="n-job">${Object.keys(JOBS).map(id=>`<option value="${id}">${esc(JOBS[id].name)}</option>`).join('')}</select></div>
+    <div class="grid2"><div class="f"><label for="n-places">Posti disponibili</label><select id="n-places">${[1,2,3,4].map(n=>`<option value="${n}">${n}</option>`).join('')}</select></div>
+    <div class="f"><label for="n-region">Cantone</label><select id="n-region"><option value="Ticino"${co.region==='Ticino'?' selected':''}>Ticino</option><option value="Zurigo"${co.region==='Zurigo'?' selected':''}>Zurigo</option><option value="Altro"${co.region==='Altro'?' selected':''}>Altro cantone</option></select></div></div>
+    <div class="f"><label for="n-city">Città</label><input id="n-city" type="text" maxlength="40" value="${esc(co.city)}"></div>
+    <div class="f"><label for="n-desc">Racconta l’azienda ai giovani (facoltativo)</label><textarea id="n-desc" maxlength="400" placeholder="Chi siete, cosa fate e come seguite gli apprendisti."></textarea></div>
+    <p class="small muted">L’inizio è agosto 2027. Orizzonte aggiunge in automatico cosa farà l’apprendista e i voti richiesti.</p>
+    <p class="err" id="n-err" role="alert" hidden></p>
+    <div class="row"><button class="btn" type="submit">Pubblica annuncio</button><a class="btn ghost" href="#azienda">Annulla</a></div>
+  </form></div>`;
+}
+function altBlock(c,p){
+  const alts=alternatives(c,[p.id,...c.applied]);
+  return `<div class="alts"><p><strong>Notifica inviata a ${esc(c.name)}.</strong> ${alts.length?'Riceve subito '+plural(alts.length,'posto vicino','posti vicini')+' al suo profilo, così non aspetta la prossima selezione.':'Nessun posto vicino al suo profilo per ora.'}</p>${altList(alts)}</div>`;
+}
+function candRow(x,i,p){
+  const {c,sc,rec}=x,d=dec[p.id+':'+c.id];
+  const why=reasons(c,p.job,sc,!!c.isMe).map(r=>`<li class="${r.k}"><span class="mk" aria-hidden="true">${r.k==='ok'?'✓':'!'}</span><span>${esc(r.t)}</span></li>`).join('');
+  const act=d==='invite'?'<span class="tag good">Invitato al colloquio · notifica inviata</span>'
+    :d==='reject'?'<span class="tag">Non invitato · notifica inviata</span>'
+    :`<button type="button" class="btn sm" data-act="decideC" data-p="${p.id}" data-c="${c.id}" data-k="invite">Invita al colloquio</button><button type="button" class="btn ghost sm" data-act="decideC" data-p="${p.id}" data-c="${c.id}" data-k="reject">Non invitare</button><span class="small muted">Se non lo inviti, riceve subito altre proposte.</span>`;
+  return `<article class="card cand${rec?' rec':''}${c.isMe?' isme':''}">
+    <div class="ctop">
+      <div class="cinfo">
+        <div class="chead"><h3>${i+1}. ${esc(c.name)}${c.isMe?' <span class="you">(tu)</span>':''}</h3>${rec?'<span class="tag sun">Consigliato da Orizzonte</span>':''}</div>
+        <p class="meta">${esc(regionLabel(c.region))} · matematica ${fmt(c.mat)} · lingue ${fmt(c.ling)}</p>
+        ${c.motivation?`<p class="quote">“${esc(c.motivation)}”</p>`:''}
+        <ul class="why">${why}</ul>
+      </div>
+      <div class="cscore"><div class="pct"><b class="num">${sc.total}</b><span>/100</span></div><div class="bar1" aria-hidden="true"><i style="width:${sc.total}%"></i></div><p class="break num">Interessi ${sc.interest} · Voti ${sc.grades} · Stage ${sc.stage} · Zona ${sc.region}</p></div>
+    </div>
+    <div class="decide">${act}</div>
+    ${d==='reject'?altBlock(c,p):''}
+  </article>`;
+}
+function candidatesView(){
+  const mine=myPostings();
+  if(!mine.length)return `<div class="stack"><div class="stack-s"><h1 class="h1s">Candidati</h1>${subnav('azienda-candidati')}</div><div class="card empty-card"><p>Pubblica un annuncio per ricevere candidature.</p><p style="margin-top:12px"><a class="btn" href="#azienda-nuovo">Nuovo annuncio</a></p></div></div>`;
+  if(!mine.some(p=>p.id===cPost))cPost=mine[0].id;
+  const p=postOf(cPost),j=JOBS[p.job],r=ranked(cPost);
+  const inv=r.filter(x=>dec[p.id+':'+x.c.id]==='invite').length;
+  return `<div class="stack">
+    <div class="stack-s"><h1 class="h1s">Candidati</h1>${subnav('azienda-candidati')}</div>
+    ${mine.length>1?`<div class="f" style="max-width:420px"><label for="sel-post">Annuncio</label><select id="sel-post">${mine.map(o=>`<option value="${o.id}"${o.id===cPost?' selected':''}>${esc(JOBS[o.job].name)} · ${esc(o.city)}</option>`).join('')}</select></div>`:''}
+    <div class="card pad stack-s"><h2 class="h3">${esc(j.name)} · ${esc(p.city)}</h2>
+      <div class="facts"><span class="tag">${plural(r.length,'candidato','candidati')}</span><span class="tag">${plural(p.places,'posto','posti')}</span><span class="tag sun">${r.filter(x=>x.rec).length} consigliati</span><span class="tag good">${plural(inv,'invitato','invitati')}</span><span class="tag">Matematica ≥ ${fmt(j.mat)}</span><span class="tag">Lingue ≥ ${fmt(j.ling)}</span></div>
+      ${co.demo?'':'<p class="small muted">Candidati di esempio, arrivati dopo la pubblicazione dell’annuncio.</p>'}</div>
+    <details class="card rule"><summary>Come decide Orizzonte</summary><ul>
+      <li><strong>Interessi, 55 punti.</strong> Quanto le risposte su tempo libero e ambiente di lavoro combaciano con il mestiere.</li>
+      <li><strong>Voti, 25 punti.</strong> Matematica e lingue rispetto ai requisiti indicativi.</li>
+      <li><strong>Stage, 12 punti.</strong> 12 per uno stage nello stesso mestiere, 6 in un mestiere affine.</li>
+      <li><strong>Zona, 8 punti.</strong> 8 nello stesso cantone, 2 in un altro.</li>
+      <li>Nome, genere, origine e frase di presentazione non entrano nel punteggio. È consigliato chi rientra nei posti disponibili e ha almeno 50 punti. Orizzonte consiglia, l’azienda decide.</li></ul></details>
+    <div class="list">${r.map((x,i)=>candRow(x,i,p)).join('')}</div>
+  </div>`;
+}
+function renderAzienda(){
+  const n=page.name;let h;
+  if(!co)h=accountView();
+  else if(!co.subscribed)h=subscriptionView();
+  else if(n==='azienda-nuovo')h=newListingView();
+  else if(n==='azienda-candidati')h=candidatesView();
+  else h=dashboardView();
+  $('#pg-azienda').innerHTML=h;
+}
+function simApplicants(p){
+  const r=CANDS.map(c=>({c,t:score(c,p.job,p).total})).sort((a,b)=>b.t-a.t).slice(0,12);
+  return r.filter((_,i)=>i%2===0).map(x=>x.c.id);
+}
+
+/* ---------- Azioni ---------- */
+let tt;
+function toast(m){const t=$('#toast');t.textContent=m;t.classList.add('show');clearTimeout(tt);tt=setTimeout(()=>t.classList.remove('show'),3400);}
+function renderAll(scrollNew){renderChat(scrollNew);renderCV();renderResults();renderPage();}
+function toggle(arr,v,max){const i=arr.indexOf(v);if(i>=0)arr.splice(i,1);else if(arr.length<max)arr.push(v);}
+function refocus(sel){const n=document.querySelector(sel);if(n)n.focus({preventScroll:true});}
+function toResults(){const r=$('#results');if(r&&!r.hidden)r.scrollIntoView({behavior:reduce?'auto':'smooth',block:'start'});}
+function finish(){me.motivation=me.motivation.trim();me.done=true;step=Q;renderAll(false);setTimeout(toResults,60);}
+function demo(){
+  Object.keys(appsData).forEach(k=>delete appsData[k]);Object.keys(dec).forEach(k=>delete dec[k]);notes.length=0;updateBadge();
+  me=Object.assign(fresh(),{name:'Alex',region:'Ticino',interests:['riparare','computer'],env:'mani',mat:4.5,ling:4,gradesSet:true,stagesSet:true,wish:'inf',motivation:'Smonto e rimonto biciclette da quando ho dieci anni.',done:true});
+  step=Q;renderAll(false);setTimeout(toResults,60);
+}
+function reset(){
+  Object.keys(appsData).forEach(k=>delete appsData[k]);Object.keys(dec).forEach(k=>delete dec[k]);notes.length=0;updateBadge();
+  me=fresh();step=0;renderAll(false);
+}
+
+document.addEventListener('click',e=>{
+  const b=e.target.closest('[data-act]');
+  if(!b||b.disabled)return;
+  const a=b.dataset.act,v=b.dataset.v,pid=b.dataset.p;
+  let moved=false;
+  switch(a){
+    case 'region':me.region=v;step=2;moved=true;break;
+    case 'int':toggle(me.interests,v,3);break;
+    case 'intNext':step=3;moved=true;break;
+    case 'env':me.env=v;step=4;moved=true;break;
+    case 'grades':me.gradesSet=true;step=5;moved=true;break;
+    case 'stg':toggle(me.stages,v,3);me.stagesSet=false;break;
+    case 'stgNext':me.stagesSet=true;step=6;moved=true;break;
+    case 'nostage':me.stages=[];me.stagesSet=true;step=6;moved=true;break;
+    case 'wish':me.wish=v;step=7;moved=true;break;
+    case 'nowish':me.wish='';step=7;moved=true;break;
+    case 'mot':finish();return;
+    case 'skip':me.motivation='';finish();return;
+    case 'restart':reset();return;
+    case 'demo':demo();return;
+    case 'showall':showAll=!showAll;renderResults();return;
+    case 'simulate':{
+      const mine=ranked(pid).find(x=>x.c.isMe);
+      decideCand(pid,'me',mine&&mine.rec?'invite':'reject');
+      renderCandidature();toast('Risposta simulata: controlla le notifiche');return;
+    }
+    case 'demoCo':co={name:'Ticino Digitale SA',city:'Lugano',region:'Ticino',subscribed:true,demo:true};cPost='p1';renderAzienda();return;
+    case 'logout':co=null;location.hash='azienda';renderAzienda();return;
+    case 'subscribe':co.subscribed=true;toast('Abbonamento attivato (simulazione)');renderAzienda();return;
+    case 'seeCands':cPost=pid;location.hash='azienda-candidati';return;
+    case 'decideC':decideCand(pid,b.dataset.c,b.dataset.k);renderAzienda();return;
+    default:return;
+  }
+  renderChat(moved);renderCV();
+  if(!moved)refocus('[data-act="'+a+'"]'+(v?'[data-v="'+v+'"]':''));
+});
+document.addEventListener('input',e=>{
+  const t=e.target;
+  if(t.id==='f-name'){me.name=t.value;$('#name-err').hidden=true;renderCV();}
+  else if(t.dataset&&t.dataset.g){me[t.dataset.g]=parseFloat(t.value);$('#o-'+t.dataset.g).textContent=fmt(t.value);me.gradesSet=true;renderCV();}
+  else if(t.id==='f-mot'){me.motivation=t.value;$('#mot-n').textContent=t.value.length+'/140';renderCV();}
+});
+document.addEventListener('change',e=>{
+  const t=e.target;
+  if(t.id==='sel-post'){cPost=t.value;renderAzienda();}
+  else if(t.name==='cv'){form.cv=t.value;const f=$('#cv-file');if(f)f.disabled=t.value!=='file';}
+  else if(t.id==='cs-adult'){$('#cs-ok').disabled=!t.checked;}
+});
+document.addEventListener('submit',e=>{
+  const f=e.target.closest('[data-form]');
+  if(!f)return;
+  e.preventDefault();
+  const kind=f.dataset.form;
+  if(kind==='name'){
+    me.name=me.name.trim();
+    if(!me.name){$('#name-err').hidden=false;$('#f-name').focus();return;}
+    step=1;renderChat(true);renderCV();
+  }else if(kind==='apply'){
+    const pid=f.dataset.p,cv=(f.querySelector('input[name="cv"]:checked')||{}).value||'profile';
+    const file=$('#cv-file')&&$('#cv-file').files[0];
+    const err=$('#ap-err');
+    if(cv==='file'&&!file){err.textContent='Scegli un file oppure usa il curriculum fatto con Orizzonte.';err.hidden=false;return;}
+    appsData[pid]={cv,file:file?file.name:'',comment:$('#ap-msg').value.trim()};
+    form={cv:'profile'};
+    toast('Candidatura inviata a '+postOf(pid).co);
+    renderPosting(pid);renderResults();window.scrollTo(0,0);
+  }else if(kind==='account'){
+    const name=$('#co-name').value.trim(),city=$('#co-city').value.trim(),err=$('#co-err');
+    if(!name||!city){err.textContent='Scrivi il nome dell’azienda e la città per continuare.';err.hidden=false;return;}
+    co={name,city,region:$('#co-region').value,subscribed:false,demo:false};
+    renderAzienda();
+  }else if(kind==='listing'){
+    const city=$('#n-city').value.trim(),err=$('#n-err');
+    if(!city){err.textContent='Scrivi la città dell’annuncio.';err.hidden=false;return;}
+    const p={id:'n'+(++nCount),job:$('#n-job').value,co:co.name,city,region:$('#n-region').value,places:parseInt($('#n-places').value,10),desc:$('#n-desc').value.trim(),own:true};
+    POSTINGS.push(p);extra[p.id]=simApplicants(p);cPost=p.id;
+    toast('Annuncio pubblicato: ora lo vedono i giovani');
+    location.hash='azienda';renderAll(false);
+  }
+});
+
+/* ---------- Cookie ---------- */
+function consentGiven(){try{return localStorage.getItem('orizzonte-cookie')==='ok';}catch(_){return false;}}
+function openConsent(){
+  $('#consent').hidden=false;$('#app').inert=true;
+  $('#cs-adult').focus();
+}
+$('#cs-ok').addEventListener('click',()=>{
+  if(!$('#cs-adult').checked)return;
+  try{localStorage.setItem('orizzonte-cookie','ok');}catch(_){}
+  $('#consent').hidden=true;$('#app').inert=false;
+});
+
+/* ---------- Navigazione ---------- */
+function renderPage(){
+  if(page.name==='posto')renderPosting(page.id);
+  else if(page.name==='candidature')renderCandidature();
+  else if(page.name.startsWith('azienda'))renderAzienda();
+}
+function route(){
+  const h=location.hash.slice(1);
+  let name='apprendista',id=null;
+  if(h.startsWith('posto-')&&postOf(h.slice(6))){name='posto';id=h.slice(6);}
+  else if(['candidature','azienda','azienda-nuovo','azienda-candidati'].includes(h))name=h;
+  const changed=name!==page.name||id!==page.id;
+  if(changed)form={cv:'profile'};
+  page={name,id};
+  const sec=name==='posto'?'posto':name.startsWith('azienda')?'azienda':name;
+  ['apprendista','posto','candidature','azienda'].forEach(s=>{$('#pg-'+s).hidden=s!==sec;});
+  const nav={'nav-a':sec==='apprendista'||sec==='posto','nav-b':sec==='candidature','nav-c':sec==='azienda'};
+  for(const k in nav){if(nav[k])$('#'+k).setAttribute('aria-current','page');else $('#'+k).removeAttribute('aria-current');}
+  renderPage();
+  if(changed)window.scrollTo(0,0);
+}
+window.addEventListener('hashchange',route);
+renderChat(false);renderCV();renderResults();updateBadge();route();
+if(!consentGiven())openConsent();
+</script>
+
+</body></html>
